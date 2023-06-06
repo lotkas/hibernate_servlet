@@ -14,16 +14,17 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public Product save(Product product) {
-        //add product by manager
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
-        session.save(product);
+        try (session) {
+            session.save(product);
+            transaction.commit();
 
-        transaction.commit();
-        session.close();
-
-        return product;
+            return product;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -31,15 +32,18 @@ public class ProductRepositoryImpl implements ProductRepository {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
-        session.get(Product.class, product.getId());
-        product.setPrice(product.getPrice());
-        product.setAvailable((product.getAvailable()));
-        session.update(product);
+        try (session) {
+            session.get(Product.class, product.getId());
+            product.setPrice(product.getPrice());
+            product.setAvailable((product.getAvailable()));
+            session.update(product);
 
-        transaction.commit();
-        session.close();
+            transaction.commit();
 
-        return product;
+            return product;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -63,27 +67,31 @@ public class ProductRepositoryImpl implements ProductRepository {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
-        Product product = session.get(Product.class, id);
-        session.delete(product);
+        try (session) {
+            Product product = session.get(Product.class, id);
+            session.delete(product);
 
-        transaction.commit();
-        session.close();
+            transaction.commit();
 
-        return product;
+            return product;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public List<Product> getAll() {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
-        String selectAll = "FROM Product";
 
-        List<Product> products = session.createQuery(selectAll, Product.class).getResultList();
+        try (session) {
+            List<Product> products = session.createQuery("FROM Product", Product.class).getResultList();
+            transaction.commit();
 
-        transaction.commit();
-        session.close();
-
-        return products;
+            return products;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -91,10 +99,13 @@ public class ProductRepositoryImpl implements ProductRepository {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
-        product.setAvailable(product.getAvailable() - 1);
-        session.update(product);
+        try (session) {
+            product.setAvailable(product.getAvailable() - 1);
+            session.update(product);
 
-        transaction.commit();
-        session.close();
+            transaction.commit();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

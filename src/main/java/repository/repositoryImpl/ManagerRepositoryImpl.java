@@ -18,12 +18,14 @@ public class ManagerRepositoryImpl implements ManagerRepository {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
-        session.save(manager);
+        try (session) {
+            session.save(manager);
+            transaction.commit();
 
-        transaction.commit();
-        session.close();
-
-        return manager;
+            return manager;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -31,16 +33,19 @@ public class ManagerRepositoryImpl implements ManagerRepository {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
-        session.get(Manager.class, manager.getId());
-        manager.setFirstName(manager.getFirstName());
-        manager.setLastName(manager.getLastName());
-        manager.setPassword(manager.getPassword());
-        session.update(manager);
+        try (session) {
+            session.get(Manager.class, manager.getId());
+            manager.setFirstName(manager.getFirstName());
+            manager.setLastName(manager.getLastName());
+            manager.setPassword(manager.getPassword());
+            session.update(manager);
 
-        transaction.commit();
-        session.close();
+            transaction.commit();
 
-        return manager;
+            return manager;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -48,12 +53,14 @@ public class ManagerRepositoryImpl implements ManagerRepository {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
-        Manager manager = session.load(Manager.class, id);
+        try (session) {
+            Manager manager = session.load(Manager.class, id);
+            transaction.commit();
 
-        transaction.commit();
-        session.close();
-
-        return manager;
+            return manager;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -61,27 +68,31 @@ public class ManagerRepositoryImpl implements ManagerRepository {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
-        Manager manager = session.load(Manager.class, id);
-        session.delete(manager);
+        try (session) {
+            Manager manager = session.load(Manager.class, id);
+            session.delete(manager);
+            transaction.commit();
 
-        transaction.commit();
-        session.close();
-
-        return manager;
+            return manager;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public List<Manager> getAll() {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
-        String selectAll = "FROM Manager";
 
-        List<Manager> managers = session.createQuery(selectAll, Manager.class).getResultList();
+        try (session) {
+            List<Manager> managers = session.createQuery("FROM Manager", Manager.class).getResultList();
 
-        transaction.commit();
-        session.close();
+            transaction.commit();
 
-        return managers;
+            return managers;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

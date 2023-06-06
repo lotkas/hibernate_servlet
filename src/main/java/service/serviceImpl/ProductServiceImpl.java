@@ -8,28 +8,29 @@ import java.util.List;
 
 public class ProductServiceImpl implements ProductService {
     private final ProductRepositoryImpl productRepository;
+
     public ProductServiceImpl() {
         productRepository = new ProductRepositoryImpl();
     }
 
     @Override
-    public Product save(Product type) {
-        return productRepository.save(type);
+    public Product save(Product product) {
+        return productRepository.save(product);
     }
 
     @Override
-    public Product update(Product type) {
-        return productRepository.update(type);
+    public Product update(Product product) {
+        return productRepository.update(product);
     }
 
     @Override
-    public Product getById(Long aLong) {
-        return productRepository.getById(aLong);
+    public Product getById(Long id) {
+        return productRepository.getById(id);
     }
 
     @Override
-    public void deleteById(Long aLong) {
-        productRepository.deleteById(aLong);
+    public void deleteById(Long id) {
+        productRepository.deleteById(id);
     }
 
     @Override

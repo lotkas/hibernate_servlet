@@ -21,30 +21,34 @@ public class UserRepositoryImpl implements UserRepository {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
-        session.save(type);
+        try (session) {
+            session.save(type);
+            transaction.commit();
 
-        transaction.commit();
-        session.close();
-
-        return type;
+            return type;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public User update(User type) {
+    public User update(User user) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.getTransaction();
 
-        User user = session.get(User.class, type.getId());
-        user.setFirstName(type.getFirstName());
-        user.setLastName(type.getLastName());
-        user.setPassword(type.getPassword());
-        user.setBalance(type.getBalance());
-        session.update(user);
+        try (session) {
+            session.get(User.class, user.getId());
+            user.setFirstName(user.getFirstName());
+            user.setLastName(user.getLastName());
+            user.setPassword(user.getPassword());
+            user.setBalance(user.getBalance());
+            session.update(user);
+            transaction.commit();
 
-        transaction.commit();
-        session.close();
-
-        return user;
+            return user;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -60,7 +64,6 @@ public class UserRepositoryImpl implements UserRepository {
             user.setBalance(updatedUserBalance);
 
             session.update(user);
-
             transaction.commit();
 
         } catch (Exception e) {
@@ -73,32 +76,36 @@ public class UserRepositoryImpl implements UserRepository {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
-        String query = "FROM User WHERE firstName = :firstName AND lastName = :lastName AND password = :password";
-        User user = session.createQuery(query, User.class)
-                .setParameter("firstName", dto.getFirstName())
-                .setParameter("lastName", dto.getLastName())
-                .setParameter("password", dto.getPassword())
-                .uniqueResult();
+        try (session) {
+            String query = "FROM User WHERE firstName = :firstName AND lastName = :lastName AND password = :password";
+            User user = session.createQuery(query, User.class)
+                    .setParameter("firstName", dto.getFirstName())
+                    .setParameter("lastName", dto.getLastName())
+                    .setParameter("password", dto.getPassword())
+                    .uniqueResult();
 
-        user.setBalance(user.getBalance().add(dto.getBalance()));
+            user.setBalance(user.getBalance().add(dto.getBalance()));
+            transaction.commit();
 
-        transaction.commit();
-        session.close();
-
-        return dto;
+            return dto;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public User getById(Long aLong) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
-        //load - извлечение обьекта из бд по индентификатору
-        User user = session.get(User.class, aLong);
 
-        transaction.commit();
-        session.close();
+        try (session) {
+            User user = session.get(User.class, aLong);
+            transaction.commit();
 
-        return user;
+            return user;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -106,12 +113,15 @@ public class UserRepositoryImpl implements UserRepository {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
-        User user = session.load(User.class, aLong);
-        session.delete(user);
+        try (session) {
+            User user = session.load(User.class, aLong);
+            session.delete(user);
+            transaction.commit();
 
-        transaction.commit();
-        session.close();
-        return user;
+            return user;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -119,13 +129,15 @@ public class UserRepositoryImpl implements UserRepository {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         String selectAll = "FROM User";
-        //createQuery - создать query запрос
-        List<User> users = session.createQuery(selectAll, User.class).getResultList();
 
-        transaction.commit();
-        session.close();
+        try (session) {
+            List<User> users = session.createQuery(selectAll, User.class).getResultList();
+            transaction.commit();
 
-        return users;
+            return users;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -144,7 +156,6 @@ public class UserRepositoryImpl implements UserRepository {
             transaction.commit();
 
             return user;
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

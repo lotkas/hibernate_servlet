@@ -13,20 +13,22 @@ import java.util.List;
 
 public class ManagerServiceImpl implements ManagerService {
     private final ProductRepositoryImpl productRepository;
+
     private final ManagerRepositoryImpl managerRepository;
+
     public ManagerServiceImpl() {
         managerRepository = new ManagerRepositoryImpl();
         productRepository = new ProductRepositoryImpl();
     }
 
     @Override
-    public Manager save(Manager type) {
-        return managerRepository.save(type);
+    public Manager save(Manager manager) {
+        return managerRepository.save(manager);
     }
 
     @Override
-    public Manager update(Manager type) {
-        return managerRepository.update(type);
+    public Manager update(Manager manager) {
+        return managerRepository.update(manager);
     }
 
     @Override
@@ -77,7 +79,7 @@ public class ManagerServiceImpl implements ManagerService {
     public Product saveProduct(ManagerAddDTO dto) {
         Manager manager = managerRepository.findManager(dto);
         if (manager == null) {
-            throw new IllegalArgumentException("Manger not found");
+            return null;
         } else {
             Product product = new Product();
             product.setName(dto.getProductName());

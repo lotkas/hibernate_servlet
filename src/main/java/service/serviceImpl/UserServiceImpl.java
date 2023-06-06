@@ -15,7 +15,9 @@ import java.util.List;
 
 public class UserServiceImpl implements UserService {
     private final UserRepositoryImpl userRepository;
+
     private final ProductRepositoryImpl productRepository;
+
     private final SaleRepositoryImpl saleRepository;
 
     public UserServiceImpl() {
@@ -25,13 +27,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User save(User type) {
-        return userRepository.save(type);
+    public User save(User user) {
+        return userRepository.save(user);
     }
 
     @Override
-    public User update(User type) {
-        return userRepository.update(type);
+    public User update(User user) {
+        return userRepository.update(user);
     }
 
     @Override
@@ -40,21 +42,17 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             return null;
         }
-        try {
-            return userRepository.update(dto);
-        } catch (Exception e) {
-            return null;
-        }
+        return userRepository.update(dto);
     }
 
     @Override
-    public User getById(Long aLong) {
-        return userRepository.getById(aLong);
+    public User getById(Long id) {
+        return userRepository.getById(id);
     }
 
     @Override
-    public void deleteById(Long aLong) {
-        userRepository.deleteById(aLong);
+    public void deleteById(Long id) {
+        userRepository.deleteById(id);
     }
 
     @Override
@@ -70,10 +68,7 @@ public class UserServiceImpl implements UserService {
         }
 
         Product product = productRepository.getById(dto.getProductId());
-        if (product == null) {
-            return null;
-        }
-        if (product.getAvailable() <= 0) {
+        if (product == null || product.getAvailable() <= 0) {
             return null;
         }
         productRepository.updateAvailable(product);

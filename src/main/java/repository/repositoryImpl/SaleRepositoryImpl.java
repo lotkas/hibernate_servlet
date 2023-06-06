@@ -17,11 +17,14 @@ public class SaleRepositoryImpl implements SaleRepository {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
-        session.save(sale);
+        try (session) {
+            session.save(sale);
+            transaction.commit();
 
-        transaction.commit();
-
-        return sale;
+            return sale;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -29,15 +32,18 @@ public class SaleRepositoryImpl implements SaleRepository {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
-        session.get(Sale.class, sale.getId());
-        sale.setProduct(sale.getProduct());
-        sale.setUser(sale.getUser());
-        session.update(sale);
+        try (session) {
+            session.get(Sale.class, sale.getId());
+            sale.setProduct(sale.getProduct());
+            sale.setUser(sale.getUser());
+            session.update(sale);
 
-        transaction.commit();
-        session.close();
+            transaction.commit();
 
-        return sale;
+            return sale;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -45,12 +51,14 @@ public class SaleRepositoryImpl implements SaleRepository {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
-        Sale sale = session.get(Sale.class, id);
+        try (session) {
+            Sale sale = session.get(Sale.class, id);
+            transaction.commit();
 
-        transaction.commit();
-        session.close();
-
-        return sale;
+            return sale;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -58,25 +66,29 @@ public class SaleRepositoryImpl implements SaleRepository {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
-        Sale sale = session.load(Sale.class, id);
-        session.delete(sale);
+        try (session) {
+            Sale sale = session.load(Sale.class, id);
+            session.delete(sale);
+            transaction.commit();
 
-        transaction.commit();
-        session.close();
-        return sale;
+            return sale;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public List<Sale> getAll() {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
-        String selectAll = "FROM Sale";
 
-        List<Sale> sales = session.createQuery(selectAll, Sale.class).getResultList();
+        try (session) {
+            List<Sale> sales = session.createQuery("FROM Sale", Sale.class).getResultList();
+            transaction.commit();
 
-        transaction.commit();
-        session.close();
-
-        return sales;
+            return sales;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
