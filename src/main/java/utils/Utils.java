@@ -51,7 +51,7 @@ public class Utils {
         return sessionFactory;
     }
 
-    public static void nullResponse(HttpServletResponse resp, PrintWriter out) throws IOException {
+    public static void returnNullResponse(HttpServletResponse resp, PrintWriter out) throws IOException {
         resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");

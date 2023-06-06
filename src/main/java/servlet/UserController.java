@@ -39,7 +39,7 @@ public class UserController extends HttpServlet {
         Sale response = usersService.buyProduct(request);
 
         if (response == null) {
-            Utils.nullResponse(resp, out);
+            Utils.returnNullResponse(resp, out);
         } else {
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
@@ -68,7 +68,7 @@ public class UserController extends HttpServlet {
         UserDonateDTO response = usersService.update(request);
 
         if (response == null) {
-            Utils.nullResponse(resp, out);
+            Utils.returnNullResponse(resp, out);
         } else {
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
