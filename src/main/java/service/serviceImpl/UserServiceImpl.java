@@ -90,6 +90,5 @@ public class UserServiceImpl implements UserService {
         userRepository.updateUserBalance(product, user);
 
         return saleRepository.save(sale);
-
     }
 }
