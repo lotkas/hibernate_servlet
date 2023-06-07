@@ -1,6 +1,7 @@
 package repository.repositoryImpl;
 
 import model.Sale;
+import model.modelDTO.GeneralDTO;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -13,41 +14,42 @@ public class SaleRepositoryImpl implements SaleRepository {
     private static final SessionFactory sessionFactory = Utils.getSessionFactory();
 
     @Override
-    public Sale save(Sale sale) {
+    public GeneralDTO<Sale> save(GeneralDTO<Sale> sale) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
         try (session) {
-            session.save(sale);
+            session.save(sale.getEntity());
             transaction.commit();
 
-            return sale;
+            return new GeneralDTO<>(sale.getEntity(), null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Sale update(Sale sale) {
+    public GeneralDTO<Sale> update(GeneralDTO<Sale> sale) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
         try (session) {
-            session.get(Sale.class, sale.getId());
-            sale.setProduct(sale.getProduct());
-            sale.setUser(sale.getUser());
+            Sale saleFromEntity = sale.getEntity();
+            session.get(Sale.class, saleFromEntity.getId());
+            saleFromEntity.setProduct(saleFromEntity.getProduct());
+            saleFromEntity.setUser(saleFromEntity.getUser());
             session.update(sale);
 
             transaction.commit();
 
-            return sale;
+            return new GeneralDTO<>(saleFromEntity, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Sale getById(Long id) {
+    public GeneralDTO<Sale> getById(Long id) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
@@ -55,14 +57,14 @@ public class SaleRepositoryImpl implements SaleRepository {
             Sale sale = session.get(Sale.class, id);
             transaction.commit();
 
-            return sale;
+            return new GeneralDTO<>(sale, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Sale deleteById(Long id) {
+    public GeneralDTO<Sale> deleteById(Long id) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
@@ -71,14 +73,14 @@ public class SaleRepositoryImpl implements SaleRepository {
             session.delete(sale);
             transaction.commit();
 
-            return sale;
+            return new GeneralDTO<>(sale, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public List<Sale> getAll() {
+    public GeneralDTO<Sale> getAll() {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
@@ -86,7 +88,7 @@ public class SaleRepositoryImpl implements SaleRepository {
             List<Sale> sales = session.createQuery("FROM Sale", Sale.class).getResultList();
             transaction.commit();
 
-            return sales;
+            return new GeneralDTO<>(sales);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

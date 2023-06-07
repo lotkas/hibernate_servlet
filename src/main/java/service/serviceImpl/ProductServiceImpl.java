@@ -1,10 +1,10 @@
 package service.serviceImpl;
 
 import model.Product;
+import model.modelDTO.GeneralDTO;
 import repository.repositoryImpl.ProductRepositoryImpl;
 import service.ProductService;
 
-import java.util.List;
 
 public class ProductServiceImpl implements ProductService {
     private final ProductRepositoryImpl productRepository;
@@ -14,17 +14,17 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product save(Product product) {
+    public GeneralDTO<Product> save(GeneralDTO<Product> product) {
         return productRepository.save(product);
     }
 
     @Override
-    public Product update(Product product) {
+    public GeneralDTO<Product> update(GeneralDTO<Product> product) {
         return productRepository.update(product);
     }
 
     @Override
-    public Product getById(Long id) {
+    public GeneralDTO<Product> getById(Long id) {
         return productRepository.getById(id);
     }
 
@@ -34,7 +34,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> getAll() {
+    public GeneralDTO<Product> getAll() {
         return productRepository.getAll();
     }
 }

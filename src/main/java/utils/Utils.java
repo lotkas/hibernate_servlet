@@ -51,12 +51,12 @@ public class Utils {
         return sessionFactory;
     }
 
-    public static void returnNullResponse(HttpServletResponse resp, PrintWriter out) throws IOException {
+    public static void returnNullResponse(HttpServletResponse resp, PrintWriter out, String message) throws IOException {
         resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
 
-        resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "IllegalArgumentException");
+        resp.sendError(HttpServletResponse.SC_BAD_REQUEST, message);
         out.print(resp);
         out.flush();
     }

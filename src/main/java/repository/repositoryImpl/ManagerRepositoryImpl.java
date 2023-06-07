@@ -2,6 +2,7 @@ package repository.repositoryImpl;
 
 import model.Manager;
 import model.modelDTO.EntranceDTO;
+import model.modelDTO.GeneralDTO;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -14,42 +15,43 @@ public class ManagerRepositoryImpl implements ManagerRepository {
     private static final SessionFactory sessionFactory = Utils.getSessionFactory();
 
     @Override
-    public Manager save(Manager manager) {
+    public GeneralDTO<Manager> save(GeneralDTO<Manager> manager) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
         try (session) {
-            session.save(manager);
+            session.save(manager.getEntity());
             transaction.commit();
 
-            return manager;
+            return new GeneralDTO<>(manager.getEntity(), null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Manager update(Manager manager) {
+    public GeneralDTO<Manager> update(GeneralDTO<Manager> manager) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
         try (session) {
-            session.get(Manager.class, manager.getId());
-            manager.setFirstName(manager.getFirstName());
-            manager.setLastName(manager.getLastName());
-            manager.setPassword(manager.getPassword());
+            Manager managerFromEntity = manager.getEntity();
+            session.get(Manager.class, managerFromEntity.getId());
+            managerFromEntity.setFirstName(managerFromEntity.getFirstName());
+            managerFromEntity.setLastName(managerFromEntity.getLastName());
+            managerFromEntity.setPassword(managerFromEntity.getPassword());
             session.update(manager);
 
             transaction.commit();
 
-            return manager;
+            return new GeneralDTO<>(managerFromEntity, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Manager getById(Long id) {
+    public GeneralDTO<Manager> getById(Long id) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
@@ -57,14 +59,14 @@ public class ManagerRepositoryImpl implements ManagerRepository {
             Manager manager = session.load(Manager.class, id);
             transaction.commit();
 
-            return manager;
+            return new GeneralDTO<>(manager, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Manager deleteById(Long id) {
+    public GeneralDTO<Manager> deleteById(Long id) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
@@ -73,14 +75,14 @@ public class ManagerRepositoryImpl implements ManagerRepository {
             session.delete(manager);
             transaction.commit();
 
-            return manager;
+            return new GeneralDTO<>(manager, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public List<Manager> getAll() {
+    public GeneralDTO<Manager> getAll() {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
@@ -89,14 +91,14 @@ public class ManagerRepositoryImpl implements ManagerRepository {
 
             transaction.commit();
 
-            return managers;
+            return new GeneralDTO<>(managers);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Manager findManager(EntranceDTO dto) {
+    public GeneralDTO<Manager> findManager(EntranceDTO dto) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
@@ -110,7 +112,7 @@ public class ManagerRepositoryImpl implements ManagerRepository {
 
             transaction.commit();
 
-            return manager;
+            return new GeneralDTO<>(manager, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

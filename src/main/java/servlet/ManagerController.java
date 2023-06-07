@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Product;
+import model.modelDTO.GeneralDTO;
 import model.modelDTO.ManagerAddDTO;
 import model.modelDTO.ManagerDeleteDTO;
 import model.modelDTO.ManagerUpdateDTO;
@@ -16,7 +17,6 @@ import utils.Utils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @WebServlet("/manager")
@@ -36,7 +36,7 @@ public class ManagerController extends HttpServlet {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
 
-        List<Product> products = productsService.getAll();
+        GeneralDTO<Product> products = productsService.getAll();
         String json = jacksonMapper.writeValueAsString(products);
         pw.println(json);
     }
@@ -46,10 +46,10 @@ public class ManagerController extends HttpServlet {
         PrintWriter out = resp.getWriter();
         String rb = req.getReader().lines().collect(Collectors.joining());
         final ManagerAddDTO request = jacksonMapper.readValue(rb, ManagerAddDTO.class);
-        Product response = managerService.saveProduct(request);
+        GeneralDTO<Product> response = managerService.saveProduct(request);
 
-        if (response == null) {
-            Utils.returnNullResponse(resp, out);
+        if (response.getEntity() == null) {
+            Utils.returnNullResponse(resp, out, response.getMessage());
         } else {
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
@@ -63,14 +63,14 @@ public class ManagerController extends HttpServlet {
         PrintWriter out = resp.getWriter();
         String rb = req.getReader().lines().collect(Collectors.joining());
         final ManagerUpdateDTO request = jacksonMapper.readValue(rb, ManagerUpdateDTO.class);
-        Product response = managerService.updateAvailableProduct(request);
+        GeneralDTO<Product> response = managerService.updateAvailableProduct(request);
 
-        if (response == null) {
-            Utils.returnNullResponse(resp, out);
+        if (response.getEntity() == null) {
+            Utils.returnNullResponse(resp, out, response.getMessage());
         } else {
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
-            out.print("Product - " + response.getName() + "<br>Available - " + response.getAvailable());
+            out.print("Product - " + response.getEntity().getName() + "<br>Available - " + response.getEntity().getAvailable());
             out.flush();
         }
     }
@@ -80,14 +80,14 @@ public class ManagerController extends HttpServlet {
         PrintWriter out = resp.getWriter();
         String rb = req.getReader().lines().collect(Collectors.joining());
         final ManagerDeleteDTO request = jacksonMapper.readValue(rb, ManagerDeleteDTO.class);
-        Product response = managerService.deleteProductById(request);
+        GeneralDTO<Product> response = managerService.deleteProductById(request);
 
-        if (response == null) {
-            Utils.returnNullResponse(resp, out);
+        if (response.getEntity() == null) {
+            Utils.returnNullResponse(resp, out, response.getMessage());
         } else {
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
-            String message = "Product was deleted: <br>" + response;
+            String message = "Product was deleted: <br>" + response.getEntity();
             out.print(message);
             out.flush();
         }

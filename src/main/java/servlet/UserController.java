@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Product;
 import model.Sale;
+import model.User;
+import model.modelDTO.GeneralDTO;
 import model.modelDTO.UserBuyDTO;
 import model.modelDTO.UserDonateDTO;
 import service.serviceImpl.ProductServiceImpl;
@@ -16,7 +18,6 @@ import utils.Utils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import java.util.stream.Collectors;
 
 
@@ -36,10 +37,10 @@ public class UserController extends HttpServlet {
         PrintWriter out = resp.getWriter();
         String rb = req.getReader().lines().collect(Collectors.joining());
         final UserBuyDTO request = jacksonMapper.readValue(rb, UserBuyDTO.class);
-        Sale response = usersService.buyProduct(request);
+        GeneralDTO<Sale> response = usersService.buyProduct(request);
 
-        if (response == null) {
-            Utils.returnNullResponse(resp, out);
+        if (response.getEntity() == null) {
+            Utils.returnNullResponse(resp, out, response.getMessage());
         } else {
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
@@ -55,7 +56,7 @@ public class UserController extends HttpServlet {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
 
-        List<Product> products = productsService.getAll();
+        GeneralDTO<Product> products = productsService.getAll();
         String json = jacksonMapper.writeValueAsString(products);
         pw.println(json);
     }
@@ -65,10 +66,10 @@ public class UserController extends HttpServlet {
         PrintWriter out = resp.getWriter();
         String rb = req.getReader().lines().collect(Collectors.joining());
         final UserDonateDTO request = jacksonMapper.readValue(rb, UserDonateDTO.class);
-        UserDonateDTO response = usersService.update(request);
+        GeneralDTO<User> response = usersService.update(request);
 
-        if (response == null) {
-            Utils.returnNullResponse(resp, out);
+        if (response.getEntity() == null) {
+            Utils.returnNullResponse(resp, out, response.getMessage());
         } else {
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");

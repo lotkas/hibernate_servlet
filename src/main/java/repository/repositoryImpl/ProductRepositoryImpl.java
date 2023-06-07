@@ -1,6 +1,7 @@
 package repository.repositoryImpl;
 
 import model.Product;
+import model.modelDTO.GeneralDTO;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -13,41 +14,42 @@ public class ProductRepositoryImpl implements ProductRepository {
     private static final SessionFactory sessionFactory = Utils.getSessionFactory();
 
     @Override
-    public Product save(Product product) {
+    public GeneralDTO<Product> save(GeneralDTO<Product> product) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
         try (session) {
-            session.save(product);
+            session.save(product.getEntity());
             transaction.commit();
 
-            return product;
+            return new GeneralDTO<>(product.getEntity(), null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Product update(Product product) {
+    public GeneralDTO<Product> update(GeneralDTO<Product> product) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
         try (session) {
-            session.get(Product.class, product.getId());
-            product.setPrice(product.getPrice());
-            product.setAvailable((product.getAvailable()));
+            Product productFromEntity = product.getEntity();
+            session.get(Product.class, productFromEntity.getId());
+            productFromEntity.setPrice(productFromEntity.getPrice());
+            productFromEntity.setAvailable((productFromEntity.getAvailable()));
             session.update(product);
 
             transaction.commit();
 
-            return product;
+            return new GeneralDTO<>(productFromEntity, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Product getById(Long id) {
+    public GeneralDTO<Product> getById(Long id) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
@@ -56,14 +58,14 @@ public class ProductRepositoryImpl implements ProductRepository {
 
             transaction.commit();
 
-            return product;
+            return new GeneralDTO<>(product, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Product deleteById(Long id) {
+    public GeneralDTO<Product> deleteById(Long id) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
@@ -73,14 +75,14 @@ public class ProductRepositoryImpl implements ProductRepository {
 
             transaction.commit();
 
-            return product;
+            return new GeneralDTO<>(product, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public List<Product> getAll() {
+    public GeneralDTO<Product> getAll() {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
@@ -88,7 +90,7 @@ public class ProductRepositoryImpl implements ProductRepository {
             List<Product> products = session.createQuery("FROM Product", Product.class).getResultList();
             transaction.commit();
 
-            return products;
+            return new GeneralDTO<>(products);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

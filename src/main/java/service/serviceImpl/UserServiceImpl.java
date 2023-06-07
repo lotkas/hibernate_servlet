@@ -3,6 +3,7 @@ package service.serviceImpl;
 import model.Product;
 import model.Sale;
 import model.User;
+import model.modelDTO.GeneralDTO;
 import model.modelDTO.UserBuyDTO;
 import model.modelDTO.UserDonateDTO;
 import repository.repositoryImpl.ProductRepositoryImpl;
@@ -11,7 +12,6 @@ import repository.repositoryImpl.UserRepositoryImpl;
 import service.UserService;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class UserServiceImpl implements UserService {
     private final UserRepositoryImpl userRepository;
@@ -27,26 +27,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User save(User user) {
+    public GeneralDTO<User> save(GeneralDTO<User> user) {
         return userRepository.save(user);
     }
 
     @Override
-    public User update(User user) {
+    public GeneralDTO<User> update(GeneralDTO<User> user) {
         return userRepository.update(user);
     }
 
     @Override
-    public UserDonateDTO update(UserDonateDTO dto) {
-        User user = userRepository.findUser(dto);
+    public GeneralDTO<User> update(UserDonateDTO dto) {
+        User user = userRepository.findUser(dto).getEntity();
         if (user == null) {
-            return null;
+            return new GeneralDTO<>(null, "User not founded");
         }
         return userRepository.update(dto);
     }
 
     @Override
-    public User getById(Long id) {
+    public GeneralDTO<User> getById(Long id) {
         return userRepository.getById(id);
     }
 
@@ -56,18 +56,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAll() {
+    public GeneralDTO<User> getAll() {
         return userRepository.getAll();
     }
 
     @Override
-    public Sale buyProduct(UserBuyDTO dto) {
-        User user = userRepository.findUser(dto);
+    public GeneralDTO<Sale> buyProduct(UserBuyDTO dto) {
+        User user = userRepository.findUser(dto).getEntity();
         if (user == null) {
             return null;
         }
 
-        Product product = productRepository.getById(dto.getProductId());
+        Product product = productRepository.getById(dto.getProductId()).getEntity();
         if (product == null || product.getAvailable() <= 0) {
             return null;
         }
@@ -81,9 +81,10 @@ public class UserServiceImpl implements UserService {
         sale.setUser(user);
         sale.setProduct(product);
         sale.setAddDate(LocalDateTime.now());
+        GeneralDTO<Sale> saleDTO = new GeneralDTO<>(sale, null);
 
         userRepository.updateUserBalance(product, user);
 
-        return saleRepository.save(sale);
+        return saleRepository.save(saleDTO);
     }
 }

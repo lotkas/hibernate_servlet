@@ -2,6 +2,7 @@ package service.serviceImpl;
 
 import model.Manager;
 import model.Product;
+import model.modelDTO.GeneralDTO;
 import model.modelDTO.ManagerAddDTO;
 import model.modelDTO.ManagerDeleteDTO;
 import model.modelDTO.ManagerUpdateDTO;
@@ -9,7 +10,6 @@ import repository.repositoryImpl.ManagerRepositoryImpl;
 import repository.repositoryImpl.ProductRepositoryImpl;
 import service.ManagerService;
 
-import java.util.List;
 
 public class ManagerServiceImpl implements ManagerService {
     private final ProductRepositoryImpl productRepository;
@@ -22,17 +22,17 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     @Override
-    public Manager save(Manager manager) {
+    public GeneralDTO<Manager> save(GeneralDTO<Manager> manager) {
         return managerRepository.save(manager);
     }
 
     @Override
-    public Manager update(Manager manager) {
+    public GeneralDTO<Manager> update(GeneralDTO<Manager> manager) {
         return managerRepository.update(manager);
     }
 
     @Override
-    public Manager getById(Long id) {
+    public GeneralDTO<Manager> getById(Long id) {
         return managerRepository.getById(id);
     }
 
@@ -42,42 +42,44 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     @Override
-    public List<Manager> getAll() {
+    public GeneralDTO<Manager> getAll() {
         return managerRepository.getAll();
     }
 
     @Override
-    public Product deleteProductById(ManagerDeleteDTO dto) {
-        Manager manager = managerRepository.findManager(dto);
+    public GeneralDTO<Product> deleteProductById(ManagerDeleteDTO dto) {
+        Manager manager = managerRepository.findManager(dto).getEntity();
         if (manager == null) {
-            throw new IllegalArgumentException("Manger not found");
+            return new GeneralDTO<>(null, "Manager not found");
         }
-        Product product = productRepository.getById(dto.getProductId());
+        Product product = productRepository.getById(dto.getProductId()).getEntity();
         if (product == null) {
-            throw new IllegalArgumentException("Product not found");
+            return new GeneralDTO<>(null, "Product not found");
         } else {
-            return productRepository.deleteById(dto.getProductId());
+            return productRepository.deleteById(product.getId());
         }
     }
 
     @Override
-    public Product updateAvailableProduct(ManagerUpdateDTO dto) {
-        Manager manager = managerRepository.findManager(dto);
+    public GeneralDTO<Product> updateAvailableProduct(ManagerUpdateDTO dto) {
+        Manager manager = managerRepository.findManager(dto).getEntity();
         if (manager == null) {
             throw new IllegalArgumentException("Manger not found");
         }
-        Product product = productRepository.getById(dto.getProductId());
+        Product product = productRepository.getById(dto.getProductId()).getEntity();
         if (product == null) {
             throw new IllegalArgumentException("Product not found");
         } else {
             product.setAvailable(dto.getAvailable());
-            return productRepository.update(product);
+            GeneralDTO<Product> productDTO = new GeneralDTO<>(product, null);
+
+            return productRepository.update(productDTO);
         }
     }
 
     @Override
-    public Product saveProduct(ManagerAddDTO dto) {
-        Manager manager = managerRepository.findManager(dto);
+    public GeneralDTO<Product> saveProduct(ManagerAddDTO dto) {
+        Manager manager = managerRepository.findManager(dto).getEntity();
         if (manager == null) {
             return null;
         } else {
@@ -85,7 +87,10 @@ public class ManagerServiceImpl implements ManagerService {
             product.setName(dto.getProductName());
             product.setPrice(dto.getProductPrice());
             product.setAvailable(dto.getProductAvailable());
-            return productRepository.save(product);
+
+            GeneralDTO<Product> productDTO = new GeneralDTO<>(product, null);
+
+            return productRepository.save(productDTO);
         }
     }
 }

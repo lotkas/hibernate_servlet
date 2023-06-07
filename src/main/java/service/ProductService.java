@@ -1,6 +1,7 @@
 package service;
 
 import model.Product;
+import model.modelDTO.GeneralDTO;
 
-public interface ProductService extends GenericService<Product, Long> {
+public interface ProductService extends GenericService<GeneralDTO<Product>, Long> {
 }

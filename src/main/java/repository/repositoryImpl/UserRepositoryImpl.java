@@ -3,6 +3,7 @@ package repository.repositoryImpl;
 import model.Product;
 import model.User;
 import model.modelDTO.EntranceDTO;
+import model.modelDTO.GeneralDTO;
 import model.modelDTO.UserDonateDTO;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -17,35 +18,38 @@ public class UserRepositoryImpl implements UserRepository {
     private static final SessionFactory sessionFactory = Utils.getSessionFactory();
 
     @Override
-    public User save(User type) {
+    public GeneralDTO<User> save(GeneralDTO<User> user) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
         try (session) {
-            session.save(type);
+            session.save(user.getEntity());
             transaction.commit();
 
-            return type;
+            return new GeneralDTO<>(user.getEntity(), null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public User update(User user) {
+    public GeneralDTO<User> update(GeneralDTO<User> user) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.getTransaction();
 
         try (session) {
-            session.get(User.class, user.getId());
-            user.setFirstName(user.getFirstName());
-            user.setLastName(user.getLastName());
-            user.setPassword(user.getPassword());
-            user.setBalance(user.getBalance());
-            session.update(user);
+            User userFromEntity = user.getEntity();
+            session.get(User.class, userFromEntity.getId());
+
+            userFromEntity.setFirstName(userFromEntity.getFirstName());
+            userFromEntity.setLastName(userFromEntity.getLastName());
+            userFromEntity.setPassword(userFromEntity.getPassword());
+            userFromEntity.setBalance(userFromEntity.getBalance());
+
+            session.update(userFromEntity);
             transaction.commit();
 
-            return user;
+            return new GeneralDTO<>(userFromEntity, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -72,7 +76,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public UserDonateDTO update(UserDonateDTO dto) {
+    public GeneralDTO<User> update(UserDonateDTO dto) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
@@ -87,14 +91,14 @@ public class UserRepositoryImpl implements UserRepository {
             user.setBalance(user.getBalance().add(dto.getBalance()));
             transaction.commit();
 
-            return dto;
+            return new GeneralDTO<>(user, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public User getById(Long aLong) {
+    public GeneralDTO<User> getById(Long aLong) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
@@ -102,14 +106,14 @@ public class UserRepositoryImpl implements UserRepository {
             User user = session.get(User.class, aLong);
             transaction.commit();
 
-            return user;
+            return new GeneralDTO<>(user, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public User deleteById(Long aLong) {
+    public GeneralDTO<User> deleteById(Long aLong) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
@@ -118,14 +122,14 @@ public class UserRepositoryImpl implements UserRepository {
             session.delete(user);
             transaction.commit();
 
-            return user;
+            return new GeneralDTO<>(user, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public List<User> getAll() {
+    public GeneralDTO<User> getAll() {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         String selectAll = "FROM User";
@@ -134,14 +138,14 @@ public class UserRepositoryImpl implements UserRepository {
             List<User> users = session.createQuery(selectAll, User.class).getResultList();
             transaction.commit();
 
-            return users;
+            return new GeneralDTO<>(users);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public User findUser(EntranceDTO dto) {
+    public GeneralDTO<User> findUser(EntranceDTO dto) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
@@ -155,7 +159,7 @@ public class UserRepositoryImpl implements UserRepository {
 
             transaction.commit();
 
-            return user;
+            return new GeneralDTO<>(user, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
