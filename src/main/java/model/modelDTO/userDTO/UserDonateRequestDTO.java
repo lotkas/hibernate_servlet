@@ -1,12 +1,13 @@
-package model.modelDTO;
+package model.modelDTO.userDTO;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import model.modelDTO.EntranceDTO;
 
 import java.math.BigDecimal;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class UserDonateDTO extends EntranceDTO {
+public class UserDonateRequestDTO extends EntranceDTO {
     private BigDecimal balance;
 }

@@ -10,8 +10,7 @@ import model.Product;
 import model.Sale;
 import model.User;
 import model.modelDTO.GeneralDTO;
-import model.modelDTO.UserBuyDTO;
-import model.modelDTO.UserDonateDTO;
+import model.modelDTO.userDTO.UserDonateRequestDTO;
 import service.serviceImpl.ProductServiceImpl;
 import service.serviceImpl.UserServiceImpl;
 import utils.Utils;
@@ -65,7 +64,7 @@ public class UserController extends HttpServlet {
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {       //update user balance
         PrintWriter out = resp.getWriter();
         String rb = req.getReader().lines().collect(Collectors.joining());
-        final UserDonateDTO request = jacksonMapper.readValue(rb, UserDonateDTO.class);
+        final UserDonateRequestDTO request = jacksonMapper.readValue(rb, UserDonateRequestDTO.class);
         GeneralDTO<User> response = usersService.update(request);
 
         if (response.getEntity() == null) {

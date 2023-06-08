@@ -1,11 +1,12 @@
-package model.modelDTO;
+package model.modelDTO.productDTO;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import model.modelDTO.EntranceDTO;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class ManagerUpdateDTO extends EntranceDTO {
+public class ProductAvailableRequestDTO extends EntranceDTO {
     private Long productId;
     private Long available;
 }

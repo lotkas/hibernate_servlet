@@ -3,9 +3,7 @@ package service.serviceImpl;
 import model.Manager;
 import model.Product;
 import model.modelDTO.GeneralDTO;
-import model.modelDTO.ManagerAddDTO;
-import model.modelDTO.ManagerDeleteDTO;
-import model.modelDTO.ManagerUpdateDTO;
+import model.modelDTO.managerDTO.ManagerUpdateRequestDTO;
 import repository.repositoryImpl.ManagerRepositoryImpl;
 import repository.repositoryImpl.ProductRepositoryImpl;
 import service.ManagerService;
@@ -61,7 +59,7 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     @Override
-    public GeneralDTO<Product> updateAvailableProduct(ManagerUpdateDTO dto) {
+    public GeneralDTO<Product> updateAvailableProduct(ManagerUpdateRequestDTO dto) {
         Manager manager = managerRepository.findManager(dto).getEntity();
         if (manager == null) {
             throw new IllegalArgumentException("Manger not found");

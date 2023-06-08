@@ -4,7 +4,7 @@ import model.Product;
 import model.User;
 import model.modelDTO.EntranceDTO;
 import model.modelDTO.GeneralDTO;
-import model.modelDTO.UserDonateDTO;
+import model.modelDTO.userDTO.UserDonateRequestDTO;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -76,7 +76,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public GeneralDTO<User> update(UserDonateDTO dto) {
+    public GeneralDTO<User> update(UserDonateRequestDTO dto) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 

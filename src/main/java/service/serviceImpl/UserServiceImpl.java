@@ -4,8 +4,7 @@ import model.Product;
 import model.Sale;
 import model.User;
 import model.modelDTO.GeneralDTO;
-import model.modelDTO.UserBuyDTO;
-import model.modelDTO.UserDonateDTO;
+import model.modelDTO.userDTO.UserDonateRequestDTO;
 import repository.repositoryImpl.ProductRepositoryImpl;
 import repository.repositoryImpl.SaleRepositoryImpl;
 import repository.repositoryImpl.UserRepositoryImpl;
@@ -37,7 +36,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public GeneralDTO<User> update(UserDonateDTO dto) {
+    public GeneralDTO<User> update(UserDonateRequestDTO dto) {
         User user = userRepository.findUser(dto).getEntity();
         if (user == null) {
             return new GeneralDTO<>(null, "User not founded");

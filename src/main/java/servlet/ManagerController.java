@@ -8,9 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Product;
 import model.modelDTO.GeneralDTO;
-import model.modelDTO.ManagerAddDTO;
-import model.modelDTO.ManagerDeleteDTO;
-import model.modelDTO.ManagerUpdateDTO;
+import model.modelDTO.managerDTO.ManagerUpdateRequestDTO;
 import service.serviceImpl.ManagerServiceImpl;
 import service.serviceImpl.ProductServiceImpl;
 import utils.Utils;
@@ -62,7 +60,7 @@ public class ManagerController extends HttpServlet {
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {       //update product
         PrintWriter out = resp.getWriter();
         String rb = req.getReader().lines().collect(Collectors.joining());
-        final ManagerUpdateDTO request = jacksonMapper.readValue(rb, ManagerUpdateDTO.class);
+        final ManagerUpdateRequestDTO request = jacksonMapper.readValue(rb, ManagerUpdateRequestDTO.class);
         GeneralDTO<Product> response = managerService.updateAvailableProduct(request);
 
         if (response.getEntity() == null) {
