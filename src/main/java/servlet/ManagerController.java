@@ -6,11 +6,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import model.Product;
+import model.Manager;
 import model.modelDTO.GeneralDTO;
+import model.modelDTO.managerDTO.ManagerIdRequestDTO;
+import model.modelDTO.managerDTO.ManagerSaveRequestDTO;
 import model.modelDTO.managerDTO.ManagerUpdateRequestDTO;
-import service.serviceImpl.ManagerServiceImpl;
-import service.serviceImpl.ProductServiceImpl;
+import service.ManagerService;
+import service.ProductService;
 import utils.Utils;
 
 import java.io.IOException;
@@ -22,70 +24,86 @@ public class ManagerController extends HttpServlet {
     private final ObjectMapper jacksonMapper = new ObjectMapper()
             .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
             .findAndRegisterModules();
-    private final ProductServiceImpl productsService = new ProductServiceImpl();
-    private final ManagerServiceImpl managerService = new ManagerServiceImpl();
+    private final ProductService productsService = new ProductService();
+    private final ManagerService managerService = new ManagerService();
 
     public ManagerController() {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {       //get List of products
-        PrintWriter pw = resp.getWriter();
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {       //get List or id manager
+        PrintWriter out = resp.getWriter();
+        String rb = req.getReader().lines().collect(Collectors.joining());
+        final ManagerIdRequestDTO request = jacksonMapper.readValue(rb, ManagerIdRequestDTO.class);
 
-        GeneralDTO<Product> products = productsService.getAll();
-        String json = jacksonMapper.writeValueAsString(products);
-        pw.println(json);
+        if (request.getManagerId() == 0) {
+            GeneralDTO<Manager> responseAll = managerService.getAll();
+            resp.setContentType("application/json");
+            resp.setCharacterEncoding("UTF-8");
+            String json = jacksonMapper.writeValueAsString(responseAll.getEntityList());
+            out.println(json);
+            out.flush();
+        } else {
+            GeneralDTO<Manager> responseById = managerService.getById(request.getManagerId());
+            if (responseById.getEntity() == null) {
+                Utils.returnNullResponse(resp, out, responseById.getMessage());
+            } else {
+                resp.setContentType("application/json");
+                resp.setCharacterEncoding("UTF-8");
+                String json = jacksonMapper.writeValueAsString(responseById.getEntity());
+                out.println(json);
+                out.flush();
+            }
+        }
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {      //add new product
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {      //add new manager
         PrintWriter out = resp.getWriter();
         String rb = req.getReader().lines().collect(Collectors.joining());
-        final ManagerAddDTO request = jacksonMapper.readValue(rb, ManagerAddDTO.class);
-        GeneralDTO<Product> response = managerService.saveProduct(request);
+        final ManagerSaveRequestDTO request = jacksonMapper.readValue(rb, ManagerSaveRequestDTO.class);
+        GeneralDTO<Manager> response = managerService.save(request);
 
         if (response.getEntity() == null) {
             Utils.returnNullResponse(resp, out, response.getMessage());
         } else {
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
-            out.print("Product: " + response + "<br>has been added");
+            out.print("Manager: " + response.getEntity() + "<br>has been added");
             out.flush();
         }
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {       //update product
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {       //update manager
         PrintWriter out = resp.getWriter();
         String rb = req.getReader().lines().collect(Collectors.joining());
         final ManagerUpdateRequestDTO request = jacksonMapper.readValue(rb, ManagerUpdateRequestDTO.class);
-        GeneralDTO<Product> response = managerService.updateAvailableProduct(request);
+        GeneralDTO<Manager> response = managerService.update(request);
 
         if (response.getEntity() == null) {
             Utils.returnNullResponse(resp, out, response.getMessage());
         } else {
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
-            out.print("Product - " + response.getEntity().getName() + "<br>Available - " + response.getEntity().getAvailable());
+            out.print("Manager: <br>" + response.getEntity());
             out.flush();
         }
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {    //delete product
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {    //delete manager by id
         PrintWriter out = resp.getWriter();
         String rb = req.getReader().lines().collect(Collectors.joining());
-        final ManagerDeleteDTO request = jacksonMapper.readValue(rb, ManagerDeleteDTO.class);
-        GeneralDTO<Product> response = managerService.deleteProductById(request);
+        final ManagerIdRequestDTO request =jacksonMapper.readValue(rb, ManagerIdRequestDTO.class);
+        GeneralDTO<Manager> response = managerService.deleteById(request.getManagerId());
 
         if (response.getEntity() == null) {
             Utils.returnNullResponse(resp, out, response.getMessage());
         } else {
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
-            String message = "Product was deleted: <br>" + response.getEntity();
+            String message = "Manager with id: " + response.getEntity().getId() + " was deleted <br>" + response.getEntity();
             out.print(message);
             out.flush();
         }

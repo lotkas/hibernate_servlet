@@ -11,8 +11,8 @@ import model.Sale;
 import model.User;
 import model.modelDTO.GeneralDTO;
 import model.modelDTO.userDTO.UserDonateRequestDTO;
-import service.serviceImpl.ProductServiceImpl;
-import service.serviceImpl.UserServiceImpl;
+import service.ProductService;
+import service.UserService;
 import utils.Utils;
 
 import java.io.IOException;
@@ -25,13 +25,13 @@ public class UserController extends HttpServlet {
     private final ObjectMapper jacksonMapper = new ObjectMapper()
             .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
             .findAndRegisterModules();
-    private final UserServiceImpl usersService = new UserServiceImpl();
-    private final ProductServiceImpl productsService = new ProductServiceImpl();
+    private final UserService usersService = new UserService();
+    private final ProductService productsService = new ProductService();
 
     public UserController() {
     }
 
-    @Override
+   /* @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {         //buy product
         PrintWriter out = resp.getWriter();
         String rb = req.getReader().lines().collect(Collectors.joining());
@@ -47,7 +47,7 @@ public class UserController extends HttpServlet {
             out.print(message);
             out.flush();
         }
-    }
+    }*/
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {       //get List of products
