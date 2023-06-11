@@ -5,5 +5,4 @@ import lombok.Data;
 @Data
 public class SaleIdRequestDTO {
     private Long saleId;
-    private boolean getAll;
 }

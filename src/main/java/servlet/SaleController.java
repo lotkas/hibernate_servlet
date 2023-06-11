@@ -1,68 +1,67 @@
 package servlet;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import model.Product;
+import model.Sale;
 import model.modelDTO.GeneralDTO;
-import model.modelDTO.productDTO.ProductDeleteByIdRequestDTO;
-import model.modelDTO.productDTO.ProductIdRequestDTO;
-import model.modelDTO.productDTO.ProductSaveRequestDTO;
-import model.modelDTO.productDTO.ProductUpdateRequestDTO;
-import service.ProductService;
+import model.modelDTO.saleDTO.SaleDeleteByIdRequestDTO;
+import model.modelDTO.saleDTO.SaleIdRequestDTO;
+import model.modelDTO.saleDTO.SaleSaveRequestDTO;
+import model.modelDTO.saleDTO.SaleUpdateRequestDTO;
+import service.SaleService;
 import utils.Utils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.stream.Collectors;
 
-@WebServlet("/product")
-public class ProductController extends HttpServlet {
+@WebServlet("sale")
+public class SaleController extends HttpServlet {
     private final ObjectMapper jacksonMapper = new ObjectMapper()
             .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
             .findAndRegisterModules();
-    private final ProductService productService = new ProductService();
+    private final SaleService saleService = new SaleService();
 
-    public ProductController() {
+    public SaleController() {
     }
 
     @Override
-    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {         //add new product
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {         //make a sale
         PrintWriter out = resp.getWriter();
         String rb = req.getReader().lines().collect(Collectors.joining());
-        final ProductSaveRequestDTO request = jacksonMapper.readValue(rb, ProductSaveRequestDTO.class);
-        GeneralDTO<Product> response = productService.save(request);
+        final SaleSaveRequestDTO request = jacksonMapper.readValue(rb, SaleSaveRequestDTO.class);
+        GeneralDTO<Sale> response = saleService.save(request);
 
         if (response.getEntity() == null) {
             Utils.returnNullResponse(resp, out, response.getMessage());
         } else {
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
-            String message = "New product: <br>" + response.getEntity();
+            String message = "Sale: <br>" + response.getEntity();
             out.print(message);
             out.flush();
         }
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {       //get products by id or list
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {       //get sale by id or list
         PrintWriter out = resp.getWriter();
         String rb = req.getReader().lines().collect(Collectors.joining());
-        final ProductIdRequestDTO request = jacksonMapper.readValue(rb, ProductIdRequestDTO.class);
+        final SaleIdRequestDTO request = jacksonMapper.readValue(rb, SaleIdRequestDTO.class);
 
-        if (request.getProductId() == 0) {
-            GeneralDTO<Product> responseAll = productService.getAll();
+        if (request.getSaleId() == 0) {
+            GeneralDTO<Sale> responseAll = saleService.getAll();
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
             String json = jacksonMapper.writeValueAsString(responseAll.getEntityList());
             out.println(json);
             out.flush();
         } else {
-            GeneralDTO<Product> responseById = productService.getById(request.getProductId());
+            GeneralDTO<Sale> responseById = saleService.getById(request.getSaleId());
             if (responseById.getEntity() == null) {
                 Utils.returnNullResponse(resp, out, responseById.getMessage());
             } else {
@@ -77,36 +76,36 @@ public class ProductController extends HttpServlet {
 
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {       //update product
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {       //update sale
         PrintWriter out = resp.getWriter();
         String rb = req.getReader().lines().collect(Collectors.joining());
-        final ProductUpdateRequestDTO request = jacksonMapper.readValue(rb, ProductUpdateRequestDTO.class);
-        GeneralDTO<Product> response = productService.update(request);
+        final SaleUpdateRequestDTO request = jacksonMapper.readValue(rb, SaleUpdateRequestDTO.class);
+        GeneralDTO<Sale> response = saleService.update(request);
 
         if (response.getEntity() == null) {
             Utils.returnNullResponse(resp, out, response.getMessage());
         } else {
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
-            String message = "Product updated: " + response.getEntity();
+            String message = "Sale updated: " + response.getEntity();
             out.print(message);
             out.flush();
         }
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {    //delete product by id
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {    //delete sale by id
         PrintWriter out = resp.getWriter();
         String rb = req.getReader().lines().collect(Collectors.joining());
-        final ProductDeleteByIdRequestDTO request =jacksonMapper.readValue(rb, ProductDeleteByIdRequestDTO.class);
-        GeneralDTO<Product> response = productService.deleteById(request);
+        final SaleDeleteByIdRequestDTO request =jacksonMapper.readValue(rb, SaleDeleteByIdRequestDTO.class);
+        GeneralDTO<Sale> response = saleService.deleteById(request);
 
         if (response.getEntity() == null) {
             Utils.returnNullResponse(resp, out, response.getMessage());
         } else {
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
-            String message = "Product with id: " + response.getEntity().getId() + " was deleted <br>" + response.getEntity();
+            String message = "Sale with id: " + response.getEntity().getId() + " was deleted <br>" + response.getEntity();
             out.print(message);
             out.flush();
         }

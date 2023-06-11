@@ -63,7 +63,6 @@ public class UserRepository {
 
             session.update(user);
             transaction.commit();
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

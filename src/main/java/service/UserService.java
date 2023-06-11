@@ -45,31 +45,4 @@ public class UserService {
    public GeneralDTO<User> getAll() {
         return userRepository.getAll();
     }
-
-    /*public GeneralDTO<Sale> buyProduct(UserBuyDTO dto) {
-        User user = userRepository.findUser(dto).getEntity();
-        if (user == null) {
-            return null;
-        }
-
-        Product product = productRepository.getById(dto.getProductId()).getEntity();
-        if (product == null || product.getAvailable() <= 0) {
-            return null;
-        }
-        productRepository.updateAvailable(product);
-
-        int balance = user.getBalance().compareTo(product.getPrice());
-        if (balance < 0) {
-            return null;
-        }
-        Sale sale = new Sale();
-        sale.setUser(user);
-        sale.setProduct(product);
-        sale.setAddDate(LocalDateTime.now());
-        GeneralDTO<Sale> saleDTO = new GeneralDTO<>(sale, null);
-
-        userRepository.updateUserBalance(product, user);
-
-        return saleRepository.save(saleDTO);
-    }*/
 }

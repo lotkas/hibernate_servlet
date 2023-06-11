@@ -93,4 +93,14 @@ public class ProductRepository {
             throw new RuntimeException(e);
         }
     }
+
+    public void updateProductAvailable (Product productDTO) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+
+        try (session) {
+            session.update(productDTO.getAvailable() - 1);
+            transaction.commit();
+        }
+    }
 }

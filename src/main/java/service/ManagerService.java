@@ -47,49 +47,4 @@ public class ManagerService {
     public GeneralDTO<Manager> getAll() {
         return managerRepository.getAll();
     }
-
-  /*  public GeneralDTO<Product> deleteProductById(ManagerDeleteDTO dto) {
-        Manager manager = managerRepository.findManager(dto).getEntity();
-        if (manager == null) {
-            return new GeneralDTO<>(null, "Manager not found");
-        }
-        Product product = productRepository.getById(dto.getProductId()).getEntity();
-        if (product == null) {
-            return new GeneralDTO<>(null, "Product not found");
-        } else {
-            return productRepository.deleteById(product.getId());
-        }
-    }
-
-    public GeneralDTO<Product> updateAvailableProduct(ManagerUpdateRequestDTO dto) {
-        Manager manager = managerRepository.findManager(dto).getEntity();
-        if (manager == null) {
-            throw new IllegalArgumentException("Manger not found");
-        }
-        Product product = productRepository.getById(dto.getProductId()).getEntity();
-        if (product == null) {
-            throw new IllegalArgumentException("Product not found");
-        } else {
-            product.setAvailable(dto.getAvailable());
-            GeneralDTO<Product> productDTO = new GeneralDTO<>(product, null);
-
-            return productRepository.update(productDTO);
-        }
-    }
-
-    public GeneralDTO<Product> saveProduct(ManagerAddDTO dto) {
-        Manager manager = managerRepository.findManager(dto).getEntity();
-        if (manager == null) {
-            return null;
-        } else {
-            Product product = new Product();
-            product.setName(dto.getProductName());
-            product.setPrice(dto.getProductPrice());
-            product.setAvailable(dto.getProductAvailable());
-
-            GeneralDTO<Product> productDTO = new GeneralDTO<>(product, null);
-
-            return productRepository.save(productDTO);
-        }
-    }*/
 }

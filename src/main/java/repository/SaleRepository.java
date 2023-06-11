@@ -12,34 +12,31 @@ import java.util.List;
 public class SaleRepository {
     private static final SessionFactory sessionFactory = Utils.getSessionFactory();
 
-    public GeneralDTO<Sale> save(GeneralDTO<Sale> sale) {
+    public GeneralDTO<Sale> save(Sale sale) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
         try (session) {
-            session.save(sale.getEntity());
+            session.save(sale);
             transaction.commit();
 
-            return new GeneralDTO<>(sale.getEntity(), null);
+            return new GeneralDTO<>(sale, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public GeneralDTO<Sale> update(GeneralDTO<Sale> sale) {
+    public GeneralDTO<Sale> update(Sale sale) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
         try (session) {
-            Sale saleFromEntity = sale.getEntity();
-            session.get(Sale.class, saleFromEntity.getId());
-            saleFromEntity.setProduct(saleFromEntity.getProduct());
-            saleFromEntity.setUser(saleFromEntity.getUser());
+            session.get(Sale.class, sale.getId());
             session.update(sale);
 
             transaction.commit();
 
-            return new GeneralDTO<>(saleFromEntity, null);
+            return new GeneralDTO<>(sale, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -53,6 +50,9 @@ public class SaleRepository {
             Sale sale = session.get(Sale.class, id);
             transaction.commit();
 
+            if (sale == null) {
+                return new GeneralDTO<>(null, "Sale not founded");
+            }
             return new GeneralDTO<>(sale, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -64,7 +64,7 @@ public class SaleRepository {
         Transaction transaction = session.beginTransaction();
 
         try (session) {
-            Sale sale = session.load(Sale.class, id);
+            Sale sale = session.get(Sale.class, id);
             session.delete(sale);
             transaction.commit();
 
