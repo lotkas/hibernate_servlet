@@ -26,6 +26,7 @@ public class ManagerService {
             manager.setPassword(managerDTO.getUpdatedPassword());
             manager.setFirstName(managerDTO.getUpdatedFirstName());
             manager.setLastName(managerDTO.getUpdatedLastName());
+
             return managerRepository.update(manager);
         }
     }
@@ -38,8 +39,9 @@ public class ManagerService {
         Manager manager = managerRepository.getById(id).getEntity();
         if (manager == null) {
             return new GeneralDTO<>(null, "Manager not founded");
+        } else {
+            return managerRepository.deleteById(id);
         }
-        return managerRepository.deleteById(id);
     }
 
     public GeneralDTO<Manager> getAll() {

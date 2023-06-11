@@ -1,12 +1,14 @@
 package model.modelDTO.productDTO;
 
 import lombok.Data;
+import model.modelDTO.EntranceDTO;
 
 import java.math.BigDecimal;
 
 @Data
-public class ProductUpdateRequestDTO {
-    private String name;
-    private BigDecimal price;
-    private Long available;
+public class ProductUpdateRequestDTO extends EntranceDTO {
+    private Long productId;
+    private String updatedName;
+    private BigDecimal updatedPrice;
+    private Long updatedAvailable;
 }

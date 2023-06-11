@@ -1,9 +1,9 @@
 package repository;
 
 import model.Manager;
+import model.modelDTO.EntranceDTO;
 import model.modelDTO.GeneralDTO;
 import model.modelDTO.managerDTO.ManagerSaveRequestDTO;
-import model.modelDTO.managerDTO.ManagerUpdateRequestDTO;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -23,6 +23,7 @@ public class ManagerRepository {
             manager.setPassword(managerDTO.getPassword());
             manager.setLastName(managerDTO.getLastName());
             manager.setFirstName(managerDTO.getFirstName());
+
             session.save(manager);
             transaction.commit();
 
@@ -54,6 +55,7 @@ public class ManagerRepository {
         try (session) {
             Manager manager = session.get(Manager.class, id);
             transaction.commit();
+
             if (manager == null) {
                 return new GeneralDTO<>(null, "Manager not founded");
             }
@@ -92,7 +94,7 @@ public class ManagerRepository {
         }
     }
 
-    public GeneralDTO<Manager> findManager(ManagerUpdateRequestDTO managerDTO) {
+    public GeneralDTO<Manager> findManager(EntranceDTO managerDTO) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 

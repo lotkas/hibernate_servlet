@@ -2,6 +2,7 @@ package repository;
 
 import model.Product;
 import model.modelDTO.GeneralDTO;
+import model.modelDTO.productDTO.ProductSaveRequestDTO;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -12,34 +13,35 @@ import java.util.List;
 public class ProductRepository {
     private static final SessionFactory sessionFactory = Utils.getSessionFactory();
 
-    public GeneralDTO<Product> save(GeneralDTO<Product> product) {
+    public GeneralDTO<Product> save(ProductSaveRequestDTO productSaveRequestDTO) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
         try (session) {
-            session.save(product.getEntity());
+            Product product = new Product();
+            product.setName(productSaveRequestDTO.getName());
+            product.setAvailable(productSaveRequestDTO.getAvailable());
+            product.setPrice(productSaveRequestDTO.getPrice());
+
+            session.save(product);
             transaction.commit();
 
-            return new GeneralDTO<>(product.getEntity(), null);
+            return new GeneralDTO<>(product, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public GeneralDTO<Product> update(GeneralDTO<Product> product) {
+    public GeneralDTO<Product> update(Product productUpdateRequestDTO) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
         try (session) {
-            Product productFromEntity = product.getEntity();
-            session.get(Product.class, productFromEntity.getId());
-            productFromEntity.setPrice(productFromEntity.getPrice());
-            productFromEntity.setAvailable((productFromEntity.getAvailable()));
-            session.update(product);
+            session.update(productUpdateRequestDTO);
 
             transaction.commit();
 
-            return new GeneralDTO<>(productFromEntity, null);
+            return new GeneralDTO<>(productUpdateRequestDTO, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -51,9 +53,11 @@ public class ProductRepository {
 
         try (session) {
             Product product = session.get(Product.class, id);
-
             transaction.commit();
 
+            if (product == null) {
+                return new GeneralDTO<>(null, "Product not founded");
+            }
             return new GeneralDTO<>(product, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -85,20 +89,6 @@ public class ProductRepository {
             transaction.commit();
 
             return new GeneralDTO<>(products);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void updateAvailable(Product product) {
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
-
-        try (session) {
-            product.setAvailable(product.getAvailable() - 1);
-            session.update(product);
-
-            transaction.commit();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
