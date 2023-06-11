@@ -39,11 +39,8 @@ public class UserController extends HttpServlet {
         if (response.getEntity() == null) {
             Utils.returnNullResponse(resp, out, response.getMessage());
         } else {
-            resp.setContentType("application/json");
-            resp.setCharacterEncoding("UTF-8");
             String message = "Thanks!<br>" + response.getEntity();
-            out.print(message);
-            out.flush();
+            Utils.sendResponse(resp, message);
         }
     }
 
@@ -55,21 +52,15 @@ public class UserController extends HttpServlet {
 
         if (request.getUserId() == 0) {
             GeneralDTO<User> responseAll = userService.getAll();
-            resp.setContentType("application/json");
-            resp.setCharacterEncoding("UTF-8");
             String json = jacksonMapper.writeValueAsString(responseAll.getEntityList());
-            out.println(json);
-            out.flush();
+            Utils.sendResponse(resp, json);
         } else {
             GeneralDTO<User> responseById = userService.getById(request.getUserId());
             if (responseById.getEntity() == null) {
                 Utils.returnNullResponse(resp, out, responseById.getMessage());
             } else {
-                resp.setContentType("application/json");
-                resp.setCharacterEncoding("UTF-8");
                 String json = jacksonMapper.writeValueAsString(responseById.getEntity());
-                out.println(json);
-                out.flush();
+                Utils.sendResponse(resp, json);
             }
         }
     }
@@ -84,11 +75,8 @@ public class UserController extends HttpServlet {
         if (response.getEntity() == null) {
             Utils.returnNullResponse(resp, out, response.getMessage());
         } else {
-            resp.setContentType("application/json");
-            resp.setCharacterEncoding("UTF-8");
             String message = "User updated: " + response.getEntity();
-            out.print(message);
-            out.flush();
+            Utils.sendResponse(resp, message);
         }
     }
 
@@ -102,11 +90,8 @@ public class UserController extends HttpServlet {
         if (response.getEntity() == null) {
             Utils.returnNullResponse(resp, out, response.getMessage());
         } else {
-            resp.setContentType("application/json");
-            resp.setCharacterEncoding("UTF-8");
             String message = "User with id: " + response.getEntity().getId() + " was deleted <br>" + response.getEntity();
-            out.print(message);
-            out.flush();
+            Utils.sendResponse(resp, message);
         }
     }
 }

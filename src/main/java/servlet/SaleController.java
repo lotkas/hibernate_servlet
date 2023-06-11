@@ -55,21 +55,15 @@ public class SaleController extends HttpServlet {
 
         if (request.getSaleId() == 0) {
             GeneralDTO<Sale> responseAll = saleService.getAll();
-            resp.setContentType("application/json");
-            resp.setCharacterEncoding("UTF-8");
             String json = jacksonMapper.writeValueAsString(responseAll.getEntityList());
-            out.println(json);
-            out.flush();
+            Utils.sendResponse(resp, json);
         } else {
             GeneralDTO<Sale> responseById = saleService.getById(request.getSaleId());
             if (responseById.getEntity() == null) {
                 Utils.returnNullResponse(resp, out, responseById.getMessage());
             } else {
-                resp.setContentType("application/json");
-                resp.setCharacterEncoding("UTF-8");
                 String json = jacksonMapper.writeValueAsString(responseById.getEntity());
-                out.println(json);
-                out.flush();
+                Utils.sendResponse(resp, json);
             }
         }
     }
@@ -85,11 +79,8 @@ public class SaleController extends HttpServlet {
         if (response.getEntity() == null) {
             Utils.returnNullResponse(resp, out, response.getMessage());
         } else {
-            resp.setContentType("application/json");
-            resp.setCharacterEncoding("UTF-8");
             String message = "Sale updated: " + response.getEntity();
-            out.print(message);
-            out.flush();
+            Utils.sendResponse(resp, message);
         }
     }
 
@@ -103,11 +94,8 @@ public class SaleController extends HttpServlet {
         if (response.getEntity() == null) {
             Utils.returnNullResponse(resp, out, response.getMessage());
         } else {
-            resp.setContentType("application/json");
-            resp.setCharacterEncoding("UTF-8");
             String message = "Sale with id: " + response.getEntity().getId() + " was deleted <br>" + response.getEntity();
-            out.print(message);
-            out.flush();
+            Utils.sendResponse(resp, message);
         }
     }
 }

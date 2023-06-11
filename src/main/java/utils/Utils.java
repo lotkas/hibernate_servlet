@@ -59,4 +59,13 @@ public class Utils {
         out.print(resp);
         out.flush();
     }
+
+    public static void sendResponse(HttpServletResponse resp, Object message) throws IOException {
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+
+        PrintWriter out = resp.getWriter();
+        out.println(message);
+        out.flush();
+    }
 }

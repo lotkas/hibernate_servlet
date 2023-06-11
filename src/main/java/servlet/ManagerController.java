@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.stream.Collectors;
 
+
 @WebServlet("/manager")
 public class ManagerController extends HttpServlet {
     private final ObjectMapper jacksonMapper = new ObjectMapper()
@@ -36,21 +37,15 @@ public class ManagerController extends HttpServlet {
 
         if (request.getManagerId() == 0) {
             GeneralDTO<Manager> responseAll = managerService.getAll();
-            resp.setContentType("application/json");
-            resp.setCharacterEncoding("UTF-8");
             String json = jacksonMapper.writeValueAsString(responseAll.getEntityList());
-            out.println(json);
-            out.flush();
+            Utils.sendResponse(resp, json);
         } else {
             GeneralDTO<Manager> responseById = managerService.getById(request.getManagerId());
             if (responseById.getEntity() == null) {
                 Utils.returnNullResponse(resp, out, responseById.getMessage());
             } else {
-                resp.setContentType("application/json");
-                resp.setCharacterEncoding("UTF-8");
                 String json = jacksonMapper.writeValueAsString(responseById.getEntity());
-                out.println(json);
-                out.flush();
+                Utils.sendResponse(resp, json);
             }
         }
     }
@@ -65,10 +60,8 @@ public class ManagerController extends HttpServlet {
         if (response.getEntity() == null) {
             Utils.returnNullResponse(resp, out, response.getMessage());
         } else {
-            resp.setContentType("application/json");
-            resp.setCharacterEncoding("UTF-8");
-            out.print("Manager: " + response.getEntity() + "<br>has been added");
-            out.flush();
+            String message = "Manager: " + response.getEntity() + "<br>has been added";
+            Utils.sendResponse(resp, message);
         }
     }
 
@@ -82,10 +75,8 @@ public class ManagerController extends HttpServlet {
         if (response.getEntity() == null) {
             Utils.returnNullResponse(resp, out, response.getMessage());
         } else {
-            resp.setContentType("application/json");
-            resp.setCharacterEncoding("UTF-8");
-            out.print("Manager: <br>" + response.getEntity());
-            out.flush();
+            String message = "Manager: <br>" + response.getEntity();
+            Utils.sendResponse(resp, message);
         }
     }
 
@@ -99,11 +90,8 @@ public class ManagerController extends HttpServlet {
         if (response.getEntity() == null) {
             Utils.returnNullResponse(resp, out, response.getMessage());
         } else {
-            resp.setContentType("application/json");
-            resp.setCharacterEncoding("UTF-8");
             String message = "Manager with id: " + response.getEntity().getId() + " was deleted <br>" + response.getEntity();
-            out.print(message);
-            out.flush();
+            Utils.sendResponse(resp, message);
         }
     }
 }
