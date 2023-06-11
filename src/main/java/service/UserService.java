@@ -1,58 +1,52 @@
 package service;
 
-import model.Product;
-import model.Sale;
 import model.User;
 import model.modelDTO.GeneralDTO;
-import model.modelDTO.userDTO.UserDonateRequestDTO;
-import repository.ProductRepository;
-import repository.SaleRepository;
+import model.modelDTO.userDTO.UserSaveRequestDTO;
+import model.modelDTO.userDTO.UserUpdateDTO;
 import repository.UserRepository;
-
-import java.time.LocalDateTime;
 
 public class UserService {
     private final UserRepository userRepository;
 
-    private final ProductRepository productRepository;
-
-    private final SaleRepository saleRepository;
-
     public UserService() {
-        saleRepository = new SaleRepository();
-        productRepository = new ProductRepository();
         userRepository = new UserRepository();
     }
 
-    public GeneralDTO<User> save(GeneralDTO<User> user) {
+    public GeneralDTO<User> save(UserSaveRequestDTO user) {
         return userRepository.save(user);
     }
 
-    public GeneralDTO<User> update(GeneralDTO<User> user) {
-        return userRepository.update(user);
-    }
-
-    public GeneralDTO<User> update(UserDonateRequestDTO dto) {
-        User user = userRepository.findUser(dto).getEntity();
+    public GeneralDTO<User> update(UserUpdateDTO userUpdateDTO) {
+        User user = userRepository.findUser(userUpdateDTO).getEntity();
         if (user == null) {
             return new GeneralDTO<>(null, "User not founded");
+        } else {
+            user.setBalance(userUpdateDTO.getUpdatedBalance());
+            user.setFirstName(userUpdateDTO.getUpdatedFirstName());
+            user.setPassword(userUpdateDTO.getUpdatedPassword());
+            user.setLastName(userUpdateDTO.getUpdatedLastName());
+            return userRepository.update(user);
         }
-        return userRepository.update(dto);
     }
 
     public GeneralDTO<User> getById(Long id) {
         return userRepository.getById(id);
     }
 
-    public void deleteById(Long id) {
-        userRepository.deleteById(id);
+    public GeneralDTO<User> deleteById(Long id) {
+        User user = userRepository.getById(id).getEntity();
+        if (user == null) {
+            return new GeneralDTO<>(null, "User not founded");
+        }
+        return userRepository.deleteById(id);
     }
 
-   /* public GeneralDTO<User> getAll() {
+   public GeneralDTO<User> getAll() {
         return userRepository.getAll();
     }
 
-    public GeneralDTO<Sale> buyProduct(UserBuyDTO dto) {
+    /*public GeneralDTO<Sale> buyProduct(UserBuyDTO dto) {
         User user = userRepository.findUser(dto).getEntity();
         if (user == null) {
             return null;

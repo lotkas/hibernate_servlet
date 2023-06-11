@@ -12,7 +12,6 @@ import model.modelDTO.managerDTO.ManagerIdRequestDTO;
 import model.modelDTO.managerDTO.ManagerSaveRequestDTO;
 import model.modelDTO.managerDTO.ManagerUpdateRequestDTO;
 import service.ManagerService;
-import service.ProductService;
 import utils.Utils;
 
 import java.io.IOException;
@@ -24,7 +23,6 @@ public class ManagerController extends HttpServlet {
     private final ObjectMapper jacksonMapper = new ObjectMapper()
             .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
             .findAndRegisterModules();
-    private final ProductService productsService = new ProductService();
     private final ManagerService managerService = new ManagerService();
 
     public ManagerController() {

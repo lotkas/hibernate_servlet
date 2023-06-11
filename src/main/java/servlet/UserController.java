@@ -6,12 +6,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import model.Product;
-import model.Sale;
 import model.User;
 import model.modelDTO.GeneralDTO;
-import model.modelDTO.userDTO.UserDonateRequestDTO;
-import service.ProductService;
+import model.modelDTO.userDTO.UserIdRequestDTO;
+import model.modelDTO.userDTO.UserSaveRequestDTO;
+import model.modelDTO.userDTO.UserUpdateDTO;
 import service.UserService;
 import utils.Utils;
 
@@ -25,54 +24,87 @@ public class UserController extends HttpServlet {
     private final ObjectMapper jacksonMapper = new ObjectMapper()
             .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
             .findAndRegisterModules();
-    private final UserService usersService = new UserService();
-    private final ProductService productsService = new ProductService();
+    private final UserService userService = new UserService();
 
     public UserController() {
     }
 
-   /* @Override
-    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {         //buy product
+    @Override
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {         //add new User
         PrintWriter out = resp.getWriter();
         String rb = req.getReader().lines().collect(Collectors.joining());
-        final UserBuyDTO request = jacksonMapper.readValue(rb, UserBuyDTO.class);
-        GeneralDTO<Sale> response = usersService.buyProduct(request);
+        final UserSaveRequestDTO request = jacksonMapper.readValue(rb, UserSaveRequestDTO.class);
+        GeneralDTO<User> response = userService.save(request);
 
         if (response.getEntity() == null) {
             Utils.returnNullResponse(resp, out, response.getMessage());
         } else {
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
-            String message = "Thanks!<br>" + response;
+            String message = "Thanks!<br>" + response.getEntity();
             out.print(message);
             out.flush();
         }
-    }*/
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {       //get List of products
-        PrintWriter pw = resp.getWriter();
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-
-        GeneralDTO<Product> products = productsService.getAll();
-        String json = jacksonMapper.writeValueAsString(products);
-        pw.println(json);
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {       //update user balance
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {       //get users by id or list
         PrintWriter out = resp.getWriter();
         String rb = req.getReader().lines().collect(Collectors.joining());
-        final UserDonateRequestDTO request = jacksonMapper.readValue(rb, UserDonateRequestDTO.class);
-        GeneralDTO<User> response = usersService.update(request);
+        final UserIdRequestDTO request = jacksonMapper.readValue(rb, UserIdRequestDTO.class);
+
+        if (request.getUserId() == 0) {
+            GeneralDTO<User> responseAll = userService.getAll();
+            resp.setContentType("application/json");
+            resp.setCharacterEncoding("UTF-8");
+            String json = jacksonMapper.writeValueAsString(responseAll.getEntityList());
+            out.println(json);
+            out.flush();
+        } else {
+            GeneralDTO<User> responseById = userService.getById(request.getUserId());
+            if (responseById.getEntity() == null) {
+                Utils.returnNullResponse(resp, out, responseById.getMessage());
+            } else {
+                resp.setContentType("application/json");
+                resp.setCharacterEncoding("UTF-8");
+                String json = jacksonMapper.writeValueAsString(responseById.getEntity());
+                out.println(json);
+                out.flush();
+            }
+        }
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {       //update user
+        PrintWriter out = resp.getWriter();
+        String rb = req.getReader().lines().collect(Collectors.joining());
+        final UserUpdateDTO request = jacksonMapper.readValue(rb, UserUpdateDTO.class);
+        GeneralDTO<User> response = userService.update(request);
 
         if (response.getEntity() == null) {
             Utils.returnNullResponse(resp, out, response.getMessage());
         } else {
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
-            String message = "Balance updated!";
+            String message = "User updated: " + response.getEntity();
+            out.print(message);
+            out.flush();
+        }
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {    //delete manager by id
+        PrintWriter out = resp.getWriter();
+        String rb = req.getReader().lines().collect(Collectors.joining());
+        final UserIdRequestDTO request =jacksonMapper.readValue(rb, UserIdRequestDTO.class);
+        GeneralDTO<User> response = userService.deleteById(request.getUserId());
+
+        if (response.getEntity() == null) {
+            Utils.returnNullResponse(resp, out, response.getMessage());
+        } else {
+            resp.setContentType("application/json");
+            resp.setCharacterEncoding("UTF-8");
+            String message = "User with id: " + response.getEntity().getId() + " was deleted <br>" + response.getEntity();
             out.print(message);
             out.flush();
         }

@@ -4,7 +4,7 @@ import model.Product;
 import model.User;
 import model.modelDTO.EntranceDTO;
 import model.modelDTO.GeneralDTO;
-import model.modelDTO.userDTO.UserDonateRequestDTO;
+import model.modelDTO.userDTO.UserSaveRequestDTO;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -16,37 +16,35 @@ import java.util.List;
 public class UserRepository {
     private static final SessionFactory sessionFactory = Utils.getSessionFactory();
 
-    public GeneralDTO<User> save(GeneralDTO<User> user) {
+    public GeneralDTO<User> save(UserSaveRequestDTO userDTO) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
         try (session) {
-            session.save(user.getEntity());
+            User user = new User();
+            user.setBalance(userDTO.getBalance());
+            user.setPassword(userDTO.getPassword());
+            user.setLastName(userDTO.getLastName());
+            user.setFirstName(userDTO.getFirstName());
+
+            session.save(user);
             transaction.commit();
 
-            return new GeneralDTO<>(user.getEntity(), null);
+            return new GeneralDTO<>(user, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public GeneralDTO<User> update(GeneralDTO<User> user) {
+    public GeneralDTO<User> update(User userUpdateDTO) {
         Session session = sessionFactory.openSession();
-        Transaction transaction = session.getTransaction();
+        Transaction transaction = session.beginTransaction();
 
         try (session) {
-            User userFromEntity = user.getEntity();
-            session.get(User.class, userFromEntity.getId());
-
-            userFromEntity.setFirstName(userFromEntity.getFirstName());
-            userFromEntity.setLastName(userFromEntity.getLastName());
-            userFromEntity.setPassword(userFromEntity.getPassword());
-            userFromEntity.setBalance(userFromEntity.getBalance());
-
-            session.update(userFromEntity);
+            session.update(userUpdateDTO);
             transaction.commit();
 
-            return new GeneralDTO<>(userFromEntity, null);
+            return new GeneralDTO<>(userUpdateDTO, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -71,47 +69,29 @@ public class UserRepository {
         }
     }
 
-    public GeneralDTO<User> update(UserDonateRequestDTO dto) {
+    public GeneralDTO<User> getById(Long id) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
         try (session) {
-            String query = "FROM User WHERE firstName = :firstName AND lastName = :lastName AND password = :password";
-            User user = session.createQuery(query, User.class)
-                    .setParameter("firstName", dto.getFirstName())
-                    .setParameter("lastName", dto.getLastName())
-                    .setParameter("password", dto.getPassword())
-                    .uniqueResult();
-
-            user.setBalance(user.getBalance().add(dto.getBalance()));
+            User user = session.get(User.class, id);
             transaction.commit();
 
+            if (user == null) {
+                return new GeneralDTO<>(null, "User not founded");
+            }
             return new GeneralDTO<>(user, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public GeneralDTO<User> getById(Long aLong) {
+    public GeneralDTO<User> deleteById(Long id) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
         try (session) {
-            User user = session.get(User.class, aLong);
-            transaction.commit();
-
-            return new GeneralDTO<>(user, null);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public GeneralDTO<User> deleteById(Long aLong) {
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
-
-        try (session) {
-            User user = session.load(User.class, aLong);
+            User user = session.load(User.class, id);
             session.delete(user);
             transaction.commit();
 
@@ -124,10 +104,9 @@ public class UserRepository {
     public GeneralDTO<User> getAll() {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
-        String selectAll = "FROM User";
 
         try (session) {
-            List<User> users = session.createQuery(selectAll, User.class).getResultList();
+            List<User> users = session.createQuery("FROM User", User.class).getResultList();
             transaction.commit();
 
             return new GeneralDTO<>(users);
